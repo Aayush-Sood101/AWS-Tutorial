@@ -1,4 +1,4 @@
-const {S3Client , GetObjectCommand, PutObjectCommand} = require("@aws-sdk/client-s3")
+const {S3Client , GetObjectCommand, PutObjectCommand , ListObjectsV2Command, DeleteObjectCommand} = require("@aws-sdk/client-s3")
 const {getSignedUrl} = require("@aws-sdk/s3-request-presigner")
 require('dotenv').config();
 
@@ -31,12 +31,33 @@ async function putObjectURL(filename , contentType){
         return url;
 }
 
+async function listObjects(){
+        const command = new ListObjectsV2Command({
+                Bucket: 'bucket.aayushs3.private',
+                Key: '/'
+        })
+
+        const result = await s3Client.send(command)
+        console.log(result);
+}
+
+async function deleteObject(key){
+        const command = new DeleteObjectCommand({
+                Bucket: 'bucket.aayushs3.private',
+                Key: key
+        })
+
+        s3Client.send(command);
+}
+
 async function init(){
         // const url = await getObjectURL("images/CISCE Results 2021.pdf");
         // console.log("URL: ", url);
 
-        const url = await putObjectURL(`image-${Date.now()}` , 'jpeg')
-        console.log("URL for uploading:" , url);
+        // const url = await putObjectURL(`image-${Date.now()}.mp4` , 'video/mp4')
+        // console.log("URL for uploading:" , url);
+
+        await(listObjects());
 }
 
 init();
