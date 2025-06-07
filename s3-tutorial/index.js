@@ -1,4 +1,4 @@
-const {S3Client , GetObjectCommand} = require("@aws-sdk/client-s3")
+const {S3Client , GetObjectCommand, PutObjectCommand} = require("@aws-sdk/client-s3")
 const {getSignedUrl} = require("@aws-sdk/s3-request-presigner")
 require('dotenv').config();
 
@@ -20,9 +20,23 @@ async function getObjectURL(key){
         return url;
 }
 
+async function putObjectURL(filename , contentType){
+        const command = new PutObjectCommand({
+                Bucket: 'bucket.aayushs3.private',
+                Key: `user-uploads/${filename}`,
+                ContentType: contentType
+        })
+
+        const url = await getSignedUrl(s3Client , command);
+        return url;
+}
+
 async function init(){
-        const url = await getObjectURL("images/CISCE Results 2021.pdf");
-        console.log("URL: ", url);
+        // const url = await getObjectURL("images/CISCE Results 2021.pdf");
+        // console.log("URL: ", url);
+
+        const url = await putObjectURL(`image-${Date.now()}` , 'jpeg')
+        console.log("URL for uploading:" , url);
 }
 
 init();
